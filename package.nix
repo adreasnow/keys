@@ -13,12 +13,12 @@
 }:
 
 buildGoModule (finalAttrs: {
-  pname = "keychain-cli";
+  pname = "keys";
   version = "2026.1.12";
 
   src = fetchFromGitHub {
     owner = "adreasnow";
-    repo = "keychain-cli";
+    repo = "keys";
     tag = "v${finalAttrs.version}";
     hash = "sha256-F3oGhFnhihG1xy8zEIquXN5etQ1lYuXDHc6c2fcOdIU=";
   };
@@ -28,26 +28,28 @@ buildGoModule (finalAttrs: {
 
   nativeBuildInputs = [ installShellFiles ];
 
+  subPackages = [ "cmd/keys" ];
+
   postInstall =
     let
       keychainCLIBin =
         if stdenv.buildPlatform.canExecute stdenv.hostPlatform then
           "$out"
         else
-          lib.getBin buildPackages.keychain-cli;
+          lib.getBin buildPackages.keys;
     in
     ''
       ls -lah ${keychainCLIBin}/bin/
-      installShellCompletion --cmd keychain-cli \
-        --bash <(${keychainCLIBin}/bin/keychain-cli completion bash) \
-        --fish <(${keychainCLIBin}/bin/keychain-cli completion fish) \
-        --zsh <(${keychainCLIBin}/bin/keychain-cli completion zsh)
+      installShellCompletion --cmd keys \
+        --bash <(${keychainCLIBin}/bin/keys completion bash) \
+        --fish <(${keychainCLIBin}/bin/keys completion fish) \
+        --zsh <(${keychainCLIBin}/bin/keys completion zsh)
     '';
 
   meta = {
     description = "Lightweight Go wrapper around the apple keychain to act as a simple CLI tool for managing secrets.";
-    homepage = "https://github.com/adreasnow/keychain-cli";
-    mainProgram = "keychain-cli";
+    homepage = "https://github.com/adreasnow/keys";
+    mainProgram = "keys";
     license = lib.licenses.gpl3Plus;
     maintainers = with lib.maintainers; [
       adreasnow

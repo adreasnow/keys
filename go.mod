@@ -1,4 +1,4 @@
-module github.com/adreasnow/keychain-cli
+module github.com/adreasnow/keys
 
 go 1.25.5
 

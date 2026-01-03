@@ -152,7 +152,7 @@ jobs:
             with import <nixpkgs> {};
             fetchFromGitHub {
               owner = "adreasnow";
-              repo = "keychain-cli";
+              repo = "keys";
               rev = "main";
               hash = lib.fakeHash;
             }

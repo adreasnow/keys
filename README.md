@@ -1,21 +1,21 @@
-# MacOS Keychain CLI
+# Keychain CLI
 
-[![Build Status](https://github.com/adreasnow/keychain-cli/actions/workflows/publish.yaml/badge.svg?branch=main)](https://github.com/adreasnow/keychain-cli/actions/workflows/publish.yaml) ![Go Coverage](https://github.com/adreasnow/keychain-cli/wiki/coverage.svg)
+[![Build Status](https://github.com/adreasnow/keys/actions/workflows/publish.yaml/badge.svg?branch=main)](https://github.com/adreasnow/keys/actions/workflows/publish.yaml) ![Go Coverage](https://github.com/adreasnow/keys/wiki/coverage.svg)
 
-This project is a very simple command-line interface for managing secrets with the MacOS Keychain.
+This project is a very simple, cross-platform command-line interface for managing secrets with your OS's built-in keychain manager.
 
 It's not intended for public consumption but can be used if so desired
 
 ## Installation
 
-Either install using the provided `package.nix` or `go install github.com/adreasnow/keychain-cli`
+Either install using the provided `package.nix` or `go install github.com/adreasnow/keys`
 
 ### Tab completions
 
 Tab completions are supported for bash, zsh, and fish shells. To enable them add the following to your shell configuration file, replacing <shell> with your shell of choice:
 
 ```bash
-source <(keychain-cli completion <shell>)
+source <(keys completion <shell>)
 ```
 
 If installing via Nix, completions will be auto-enabled
@@ -24,10 +24,10 @@ If installing via Nix, completions will be auto-enabled
 
 ```
 NAME:
-   keychain-cli - A new cli application
+   keys - A new cli application
 
 USAGE:
-   keychain-cli [global options] [command [command options]]
+   keys [global options] [command [command options]]
 
 COMMANDS:
    list     List all secrets

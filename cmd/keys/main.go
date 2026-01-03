@@ -8,7 +8,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/adreasnow/keychain-cli/keys"
+	"github.com/adreasnow/keys/keys"
 	"github.com/urfave/cli/v3"
 )
 
@@ -22,7 +22,7 @@ func main() {
 	var secret string
 
 	cmd := &cli.Command{
-		Name:                  "keychain-cli",
+		Name:                  "keys",
 		EnableShellCompletion: true,
 		Commands: []*cli.Command{
 			{

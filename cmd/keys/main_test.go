@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/adreasnow/keychain-cli/keys"
+	"github.com/adreasnow/keys/keys"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v3"
