@@ -18,21 +18,21 @@ type Dict struct {
 	keys map[string]bool
 }
 
-func NewDict() (d *Dict) {
+func NewDict() (d *Dict, err error) {
 	d = &Dict{
 		keys: map[string]bool{},
 	}
 
-	err := d.loadKeys()
+	err = d.loadKeys()
 	if err != nil {
 		if !errors.Is(err, keyring.ErrNotFound) {
-			fmt.Fprintf(os.Stderr, "Failed to load keys: %v\n", err)
-			os.Exit(1)
+			err = fmt.Errorf("failed to load keys: %w", err)
+			return
 		}
 
-		if err := d.saveKeys(); err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to initialise keys: %v\n", err)
-			os.Exit(1)
+		if err = d.saveKeys(); err != nil {
+			err = fmt.Errorf("failed to initialise keys: %w", err)
+			return
 		}
 	}
 

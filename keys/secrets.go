@@ -26,6 +26,7 @@ func (d *Dict) DeleteSecret(key string) (err error) {
 	err = d.DeleteKey(key)
 	if err != nil {
 		err = fmt.Errorf("failed to delete key: %w", err)
+		return
 	}
 
 	retreivedSecret, err := keyring.Get(key, user)
@@ -52,6 +53,7 @@ func (d *Dict) SetSecret(key, secret string) (err error) {
 	err = d.AddKey(key)
 	if err != nil {
 		err = fmt.Errorf("failed to add key: %w", err)
+		return
 	}
 
 	retreivedSecret, err := keyring.Get(key, user)

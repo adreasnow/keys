@@ -26,36 +26,42 @@ func main() {
 		EnableShellCompletion: true,
 		Commands: []*cli.Command{
 			{
-				Name:  "set",
-				Usage: "set a secret",
-				Arguments: []cli.Argument{
-					&cli.StringArg{Name: "key", Destination: &key},
-					&cli.StringArg{Name: "secret", Destination: &secret},
-				},
-				Action: func(_ context.Context, _ *cli.Command) error {
-					return set(key, secret)
+				Name:  "list",
+				Usage: "List all secrets",
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					return list(cmd)
 				},
 			},
 			{
 				Name:  "get",
-				Usage: "get a secret",
+				Usage: "Get a specific secret by key",
 				Arguments: []cli.Argument{
 					&cli.StringArg{Name: "key", Destination: &key},
 				},
-				Action: func(_ context.Context, _ *cli.Command) error {
-					return get(key)
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					return get(key, cmd)
 				},
 				ShellComplete: func(_ context.Context, cmd *cli.Command) { completion(cmd) },
 			},
-
+			{
+				Name:  "set",
+				Usage: "Create/update a secret",
+				Arguments: []cli.Argument{
+					&cli.StringArg{Name: "key", Destination: &key},
+					&cli.StringArg{Name: "secret", Destination: &secret},
+				},
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					return set(key, secret, cmd)
+				},
+			},
 			{
 				Name:  "delete",
-				Usage: "delete a secret",
+				Usage: "Delete a secret",
 				Arguments: []cli.Argument{
 					&cli.StringArg{Name: "key", Destination: &key},
 				},
-				Action: func(_ context.Context, _ *cli.Command) error {
-					return delete(key)
+				Action: func(_ context.Context, cmd *cli.Command) error {
+					return delete(key, cmd)
 				},
 				ShellComplete: func(_ context.Context, cmd *cli.Command) { completion(cmd) },
 			},
@@ -63,7 +69,7 @@ func main() {
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(cmd.ErrWriter, err) //nolint:errcheck
 	}
 }
 
@@ -75,8 +81,11 @@ func obfuscate(secret string) string {
 	return out.String()
 }
 
-func set(key, secret string) error {
-	var dict = keys.NewDict()
+func set(key, secret string, cmd *cli.Command) error {
+	dict, err := keys.NewDict()
+	if err != nil {
+		return err
+	}
 
 	if key == "" {
 		return ErrMissingKey
@@ -86,17 +95,38 @@ func set(key, secret string) error {
 		return ErrMissingSecret
 	}
 
-	err := dict.SetSecret(key, secret)
+	err = dict.SetSecret(key, secret)
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(os.Stdout, "Set secret %s=%s\n", key, obfuscate(secret)) //nolint:errcheck
+	fmt.Fprintf(cmd.Writer, "Set secret %s=%s\n", key, obfuscate(secret)) //nolint:errcheck
 	return nil
 }
 
-func get(key string) error {
-	var dict = keys.NewDict()
+func list(cmd *cli.Command) error {
+	dict, err := keys.NewDict()
+	if err != nil {
+		return err
+	}
+
+	secrets, err := dict.GetAllKeys()
+	if err != nil {
+		return err
+	}
+
+	for _, secret := range secrets {
+		fmt.Fprintln(cmd.Writer, secret) //nolint:errcheck
+	}
+
+	return nil
+}
+
+func get(key string, cmd *cli.Command) error {
+	dict, err := keys.NewDict()
+	if err != nil {
+		return err
+	}
 
 	if key == "" {
 		return ErrMissingKey
@@ -107,32 +137,39 @@ func get(key string) error {
 		return err
 	}
 
-	fmt.Fprintln(os.Stdout, secret) //nolint:errcheck
+	fmt.Fprintln(cmd.Writer, secret) //nolint:errcheck
 	return nil
 }
 
-func delete(key string) error {
-	var dict = keys.NewDict()
+func delete(key string, cmd *cli.Command) error {
+	dict, err := keys.NewDict()
+	if err != nil {
+		return err
+	}
 
 	if key == "" {
 		return ErrMissingKey
 	}
 
-	err := dict.DeleteSecret(key)
+	err = dict.DeleteSecret(key)
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintf(os.Stdout, "Deleted secret %s\n", key) //nolint:errcheck
+	fmt.Fprintf(cmd.Writer, "Deleted secret %s\n", key) //nolint:errcheck
 	return nil
 }
 
 func completion(cmd *cli.Command) {
-	var dict = keys.NewDict()
+	dict, err := keys.NewDict()
+	if err != nil {
+		fmt.Fprintf(cmd.ErrWriter, "failed to get keys: %v\n", err) //nolint:errcheck
+		os.Exit(1)
+	}
 
 	keys, err := dict.GetAllKeys()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to get keys: %v\n", err)
+		fmt.Fprintf(cmd.ErrWriter, "failed to get keys: %v\n", err) //nolint:errcheck
 		os.Exit(1)
 	}
 
