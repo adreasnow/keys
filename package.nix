@@ -1,9 +1,4 @@
 {
-  # golangci-lint has historically required code changes to support new versions of
-  # go so always use the latest specific go version that golangci-lint supports
-  # rather than buildGoLatestModule.
-  # This can be bumped when the release notes of golangci-lint detail support for
-  # new version of go.
   buildGoModule,
   buildPackages,
   fetchFromGitHub,
@@ -32,25 +27,24 @@ buildGoModule (finalAttrs: {
 
   postInstall =
     let
-      keychainCLIBin =
+      keysBin =
         if stdenv.buildPlatform.canExecute stdenv.hostPlatform then
           "$out"
         else
           lib.getBin buildPackages.keys;
     in
     ''
-      ls -lah ${keychainCLIBin}/bin/
       installShellCompletion --cmd keys \
-        --bash <(${keychainCLIBin}/bin/keys completion bash) \
-        --fish <(${keychainCLIBin}/bin/keys completion fish) \
-        --zsh <(${keychainCLIBin}/bin/keys completion zsh)
+        --bash <(${keysBin}/bin/keys completion bash) \
+        --fish <(${keysBin}/bin/keys completion fish) \
+        --zsh <(${keysBin}/bin/keys completion zsh)
     '';
 
   meta = {
-    description = "Lightweight Go wrapper around the apple keychain to act as a simple CLI tool for managing secrets.";
+    description = "Lightweight Go wrapper around your OS's keychain to act as a simple CLI tool for managing secrets.";
     homepage = "https://github.com/adreasnow/keys";
     mainProgram = "keys";
-    license = lib.licenses.gpl3Plus;
+    license = lib.licenses.mit;
     maintainers = with lib.maintainers; [
       adreasnow
     ];
