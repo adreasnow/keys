@@ -29,7 +29,12 @@ func (d *Dict) DeleteSecret(key string) (err error) {
 	}
 
 	retreivedSecret, err := keyring.Get(key, user)
-	if !errors.Is(err, keyring.ErrNotFound) || retreivedSecret != "" {
+	if errors.Is(err, keyring.ErrNotFound) {
+		err = nil
+		return
+	}
+
+	if err != nil || retreivedSecret != "" {
 		err = fmt.Errorf("failed to verify secret deletion: %w", err)
 		return
 	}
