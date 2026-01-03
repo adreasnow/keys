@@ -14,13 +14,13 @@
 
 buildGo125Module (finalAttrs: {
   pname = "keychain-cli";
-  version = "2026.1.2";
+  version = "2026.1.4";
 
   src = fetchFromGitHub {
     owner = "adreasnow";
     repo = "keychain-cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-H/y4OXZooqG+/6Jb8ZjWefFGPi9/uT/eKXdMCkXniq4=";
+    hash = "sha256-6Q3p74mBHRVzFnnVGq3MQ/sDYnADMkKXlbg0TbCG0jA=";
   };
 
   vendorHash = "sha256-BmcA7S8dNSPjvM/x/MXaL5SBbccvZYEhJUHi+Txdt6s=";
