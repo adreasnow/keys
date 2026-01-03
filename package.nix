@@ -14,7 +14,7 @@
 
 buildGo125Module (finalAttrs: {
   pname = "keychain-cli";
-  version = "2026.1.2VENDOR_HASH";
+  version = "2026.1.2";
 
   src = fetchFromGitHub {
     owner = "adreasnow";

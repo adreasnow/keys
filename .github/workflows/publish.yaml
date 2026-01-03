@@ -101,3 +101,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "[AUTOMATED] Update package.nix and vendor for tag ${{ steps.tag.outputs.version }}"
+          file_pattern: package.nix
