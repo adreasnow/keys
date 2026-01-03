@@ -53,7 +53,7 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      - name: Generate Vendor folder
+      - name: Generate vendor folder
         run: |
           go mod tidy
           go mod vendor
@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "VENDOR_HASH=$(nix hash path ./vendor )" >> $GITHUB_ENV
 
-      - name: Get new hash
+      - name: Generate package hash
         id: hash
         run: |
           NEW_HASH=$(nix-build -E '
@@ -77,10 +77,10 @@ jobs:
 
           echo "NEW_HASH=$NEW_HASH" >> $GITHUB_ENV
 
-      - name: Update Nix Package
+      - name: Update Nix package manifest
         uses: actions/github-script@v6
         env:
-          NEW_VERSION: ${{ needs.tag.outputs.version }}VENDOR_HASH
+          NEW_VERSION: ${{ needs.tag.outputs.version }}
         with:
           script: |
             const fs = require("fs");
@@ -100,4 +100,4 @@ jobs:
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "[AUTOMATED] Update package.nix for tag ${{ steps.tag.outputs.version }}"
+          commit_message: "[AUTOMATED] Update package.nix and vendor for tag ${{ steps.tag.outputs.version }}"
