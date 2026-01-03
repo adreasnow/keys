@@ -9,13 +9,13 @@
 
 buildGoModule (finalAttrs: {
   pname = "keys";
-  version = "2026.1.13";
+  version = "2026.1.14";
 
   src = fetchFromGitHub {
     owner = "adreasnow";
     repo = "keys";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-GLVvtsPRz9gzc3uOXz+SRqbs9KgZLjLtTF0KPDPsihQ=";
+    hash = "sha256-SgvSHJcBW25P+rZShuWXq/stJkba9glr4tCtC4Mkvpo=";
   };
   vendorHash = "sha256-diCC3gA2hnAlzH3E7syMrKD3yebU+ZsSnicWg8ZW6x8=";
 
