@@ -8,7 +8,7 @@ It's not intended for public consumption but can be used if so desired
 
 ## Installation
 
-Either install using the provided `package.nix` or `go install github.com/adreasnow/keys`
+Either install using the provided `package.nix` or `go install github.com/adreasnow/keys@latest`
 
 ### Tab completions
 
