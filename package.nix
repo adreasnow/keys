@@ -9,15 +9,15 @@
 
 buildGoModule (finalAttrs: {
   pname = "keys";
-  version = "2026.1.15";
+  version = "2026.2.1";
 
   src = fetchFromGitHub {
     owner = "adreasnow";
     repo = "keys";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-IJ0fgnjn9xIshfFnr7AX15V4MCFnn9XcqzKUbUJmSAc=";
+    hash = "sha256-zxsNdysNdgRE+cpAChhpGes7cK7GgvryJkhPbin6Xyo=";
   };
-  vendorHash = "sha256-diCC3gA2hnAlzH3E7syMrKD3yebU+ZsSnicWg8ZW6x8=";
+  vendorHash = "sha256-wJ4Hmpd868BtXk0NArPY0yP/rGAiC2cnEtQPJTNqYpg=";
 
   ldflags = [ "-s -w -X main.version=${finalAttrs.version}" ];
 
