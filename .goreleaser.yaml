@@ -40,21 +40,18 @@ checksum:
 changelog:
   sort: asc
 
-homebrew_casks:
+brews:
   - repository:
       owner: adreasnow
       name: homebrew-tap
       token: "{{ .Env.TAPS_KEY }}"
     name: keys
+    directory: Formula
     homepage: https://github.com/adreasnow/keys
     description: Lightweight Go wrapper around your OS keychain to act as a simple CLI tool for managing secrets.
-    completions:
-      bash: completions/keys.bash
-      zsh: completions/keys.zsh
-      fish: completions/keys.fish
-    hooks:
-      post:
-        install: |
-          if OS.mac?
-            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/keys"]
-          end
+    license: MIT
+    install: |
+      bin.install "keys"
+      bash_completion.install "completions/keys.bash" => "keys"
+      zsh_completion.install "completions/keys.zsh" => "_keys"
+      fish_completion.install "completions/keys.fish" => "keys.fish"
