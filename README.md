@@ -8,7 +8,7 @@ It's not intended for public consumption but can be used if so desired
 
 ## Installation
 
-Either install using the provided `package.nix` or `go install github.com/adreasnow/keys/cmd/keys@latest`
+Either install with brew using `brew install adreasnow/tap/keys` or `go install github.com/adreasnow/keys/cmd/keys@latest`
 
 ### Tab completions
 
@@ -18,7 +18,7 @@ Tab completions are supported for bash, zsh, and fish shells. To enable them add
 source <(keys completion <shell>)
 ```
 
-If installing via Nix, completions will be auto-enabled
+If installing via Brew, completions will be auto sent to the brew completions directory
 
 ## Usage
 

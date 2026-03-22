@@ -1,0 +1,60 @@
+version: 2
+
+project_name: keys
+
+builds:
+  - main: ./cmd/keys
+    binary: keys
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+before:
+  hooks:
+    - mkdir -p completions
+    - go build -o /tmp/keys-completions ./cmd/keys
+    - sh -c "/tmp/keys-completions completion bash > completions/keys.bash"
+    - sh -c "/tmp/keys-completions completion zsh > completions/keys.zsh"
+    - sh -c "/tmp/keys-completions completion fish > completions/keys.fish"
+
+archives:
+  - formats:
+      - tar.gz
+    name_template: >-
+      {{ .ProjectName }}_{{ .Os }}_{{ .Arch }}
+    files:
+      - src: completions/*
+        dst: completions
+        strip_parent: true
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+
+homebrew_casks:
+  - repository:
+      owner: adreasnow
+      name: homebrew-tap
+      token: "{{ .Env.TAPS_KEY }}"
+    name: keys
+    homepage: https://github.com/adreasnow/keys
+    description: Lightweight Go wrapper around your OS keychain to act as a simple CLI tool for managing secrets.
+    completions:
+      bash: completions/keys.bash
+      zsh: completions/keys.zsh
+      fish: completions/keys.fish
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/keys"]
+          end

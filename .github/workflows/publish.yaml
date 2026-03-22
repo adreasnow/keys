@@ -1,4 +1,4 @@
-name: Publish Nix package
+name: Publish
 on:
   push:
     branches:
@@ -96,6 +96,7 @@ jobs:
       - test
     outputs:
       version: ${{ steps.version.outputs.version }}
+      v-version: ${{ steps.version.outputs.v-version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -119,69 +120,30 @@ jobs:
               sha: context.sha
             })
 
-  package:
-    name: Update Nix Package
+  release:
+    name: GoReleaser Release
     needs:
       - tag
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v21
+        with:
+          fetch-depth: 0
 
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version-file: "go.mod"
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
 
-      - name: Generate vendor folder
-        run: |
-          go mod tidy
-          go mod vendor
-
-      - name: Generate vendor hash
-        run: |
-          echo "VENDOR_HASH=$(nix hash path ./vendor )" >> $GITHUB_ENV
-
-      - name: Generate package hash
-        id: hash
-        run: |
-          NEW_HASH=$(nix-build -E '
-            with import <nixpkgs> {};
-            fetchFromGitHub {
-              owner = "adreasnow";
-              repo = "keys";
-              rev = "main";
-              hash = lib.fakeHash;
-            }
-          ' 2>&1 | grep "got:" | awk "{print \$2}")
-
-          echo "NEW_HASH=$NEW_HASH" >> $GITHUB_ENV
-
-      - name: Update Nix package manifest
-        uses: actions/github-script@v8
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: release --clean
         env:
-          NEW_VERSION: ${{ needs.tag.outputs.version }}
-        with:
-          script: |
-            const fs = require("fs");
-
-            let content = fs.readFileSync("package.nix", "utf8");
-
-            const version = process.env.NEW_VERSION;
-            const hash = process.env.NEW_HASH;
-            const vendorHash = process.env.VENDOR_HASH;
-
-            content = content.replace(/version = ".*?";/, `version = "${version}";`);
-            content = content.replace(/hash = "sha256-.*?";/, `hash = "${hash}";`);
-            content = content.replace(/vendorHash = ".*?";/, `vendorHash = "${vendorHash}";`);
-
-            fs.writeFileSync("package.nix", content, "utf8");
-
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "[AUTOMATED] Update package.nix and vendor for tag ${{ needs.tag.outputs.version }}"
-          file_pattern: package.nix
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAPS_KEY: ${{ secrets.TAPS_KEY }}
+          GORELEASER_CURRENT_TAG: ${{ needs.tag.outputs.v-version }}
