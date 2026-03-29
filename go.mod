@@ -5,7 +5,7 @@ go 1.25.5
 require (
 	github.com/stretchr/testify v1.11.1
 	github.com/urfave/cli/v3 v3.8.0
-	github.com/zalando/go-keyring v0.2.7
+	github.com/zalando/go-keyring v0.2.8
 )
 
 require (
